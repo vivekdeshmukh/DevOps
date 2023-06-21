@@ -5,7 +5,6 @@ import javax.persistence.*;
 
 import java.io.Serializable;
 import java.util.Set;
-
 /**{@author waheedk} !*/
 @Entity
 @Table(name = "user")
