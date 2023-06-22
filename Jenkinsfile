@@ -8,11 +8,11 @@ pipeline {
     }
 	
     environment {
-        ARTVERSION = "${env.BUILD_ID}"
+        registry = "vivekdeshmukh/devops_01"
+        registryCredential = 'dockerhub'
     }
 	
-    stages{
-        
+    stages {
         stage('BUILD'){
             steps {
                 sh 'mvn clean install -DskipTests'
@@ -25,18 +25,18 @@ pipeline {
             }
         }
 
-	stage('UNIT TEST'){
+        stage('UNIT TEST'){
             steps {
                 sh 'mvn test'
             }
         }
 
-	stage('INTEGRATION TEST'){
+        stage('INTEGRATION TEST'){
             steps {
                 sh 'mvn verify -DskipUnitTests'
             }
         }
-		
+
         stage ('CODE ANALYSIS WITH CHECKSTYLE'){
             steps {
                 sh 'mvn checkstyle:checkstyle'
@@ -48,31 +48,28 @@ pipeline {
             }
         }
 
-        stage('CODE ANALYSIS with SONARQUBE') {
-          
-		  environment {
-             scannerHome = tool 'sonarscanner4'
-          }
-
+        stage('Build App Image') {
           steps {
-            withSonarQubeEnv('sonar-pro') {
-               sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=devops \
-                   -Dsonar.projectName=devops-repo \
-                   -Dsonar.projectVersion=1.0 \
-                   -Dsonar.sources=src/ \
-                   -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
-                   -Dsonar.junit.reportsPath=target/surefire-reports/ \
-                   -Dsonar.jacoco.reportsPath=target/jacoco.exec \
-                   -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
-            }
-
-            timeout(time: 10, unit: 'MINUTES') {
-               waitForQualityGate abortPipeline: true
+            script {
+              sh 'docker build -t devops_01:latest .' 
             }
           }
         }
 
+        stage('Upload Image'){
+          steps {
+                sh 'echo "DOCKER_ACCESS_TOKEN" | docker login -u "USER_NAME" --password-stdin'
+                sh 'docker tag devops_01:latest vivekdeshmukh/devops_01:latest'
+                sh 'docker push vivekdeshmukh/devops_01:latest'
+            }
+          }
+        }
 
+        stage('Run Docker Container') {
+            steps {
+                sh "docker run -d -p 8082:8080 vivekdeshmukh/devops_01"
+            }
+        }
     }
 
 
