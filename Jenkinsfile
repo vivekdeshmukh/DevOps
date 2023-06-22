@@ -44,9 +44,7 @@ pipeline {
 
         stage('Build App Image') {
           steps {
-            script {
-              sh 'docker build -t devops_01:latest .' 
-            }
+                sh 'docker build -t devops_01:latest .' 
           }
         }
 
@@ -65,6 +63,5 @@ pipeline {
             }
         }
     }
-
 
 }
