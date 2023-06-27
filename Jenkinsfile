@@ -22,8 +22,14 @@ pipeline {
 
         stage('BUILD'){
             steps {
-                sh 'mvn clean install -DskipTests'
+                sh 'mvn install -DskipTests'
             }
+            post {
+	           success {
+	              echo 'Now Archiving it...'
+	              archiveArtifacts artifacts: '**/target/*.war'
+	           }
+	        }
         }
 
         stage('UNIT TEST'){
