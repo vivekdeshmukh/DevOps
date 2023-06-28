@@ -56,18 +56,17 @@ pipeline {
         }
 
         stage('Build App Image') {
-          steps {
+            steps {
                 sh 'docker build -t devops_01:latest .' 
-          }
+            }
         }
 
         stage('Upload Image'){
-          steps {
+            steps {
                 sh 'echo "dckr_pat_PqIs11ffvkn_GBRcdoJBW60Z3y4" | docker login -u "vivekdeshmukh" --password-stdin'
                 sh 'docker tag devops_01:latest vivekdeshmukh/devops_01:latest'
                 sh 'docker push vivekdeshmukh/devops_01:latest'
             }
-          }
         }
 
         stage('Run Docker Container') {
