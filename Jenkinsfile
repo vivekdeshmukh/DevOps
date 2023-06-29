@@ -7,17 +7,11 @@ pipeline {
         jdk "OracleJDK8"
     }
 	
-    // environment {
-    //     registry = "vivekdeshmukh/devops_01"
-    //     registryCredential = 'dockerhub'
-    // }
-	
     stages {
         stage('Fetch code') {
             steps {
                git branch: 'main', url: 'https://github.com/vivekdeshmukh/DevOps.git'
             }
-
 	    }
 
         stage('BUILD'){
@@ -75,5 +69,4 @@ pipeline {
             }
         }
     }
-
 }
